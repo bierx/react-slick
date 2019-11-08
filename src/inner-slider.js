@@ -36,7 +36,8 @@ export class InnerSlider extends React.Component {
     this.state = {
       ...initialState,
       currentSlide: this.props.initialSlide,
-      slideCount: React.Children.count(this.props.children)
+      slideCount: React.Children.count(this.props.children),
+      previouslyDragged: false
     };
     this.callbackTimers = [];
     this.clickable = true;
@@ -52,7 +53,7 @@ export class InnerSlider extends React.Component {
       this.list.style.height = getHeight(elem) + "px";
     }
   };
-  UNSAFE_componentWillMount = () => {
+  componentWillMount = () => {
     this.ssrInit();
     this.props.onInit && this.props.onInit();
     if (this.props.lazyLoad) {
@@ -127,7 +128,7 @@ export class InnerSlider extends React.Component {
       clearInterval(this.autoplayTimer);
     }
   };
-  UNSAFE_componentWillReceiveProps = nextProps => {
+  componentWillReceiveProps = nextProps => {
     let spec = {
       listRef: this.list,
       trackRef: this.track,
@@ -388,7 +389,9 @@ export class InnerSlider extends React.Component {
     );
     onLazyLoad && slidesToLoad.length > 0 && onLazyLoad(slidesToLoad);
     this.setState(state, () => {
-      asNavFor && asNavFor.innerSlider.slideHandler(index);
+      asNavFor &&
+        asNavFor.innerSlider.state.currentSlide !== currentSlide &&
+        asNavFor.innerSlider.slideHandler(index);
       if (!nextState) return;
       this.animationEndCallback = setTimeout(() => {
         const { animating, ...firstBatch } = nextState;
@@ -442,7 +445,7 @@ export class InnerSlider extends React.Component {
       this.disableBodyScroll();
     }
     let state = swipeStart(e, this.props.swipe, this.props.draggable);
-    state !== "" && this.setState(state);
+    state !== "" && this.setState({ ...state, previouslyDragged: false });
   };
   swipeMove = e => {
     let state = swipeMove(e, {
@@ -456,7 +459,7 @@ export class InnerSlider extends React.Component {
     if (state["swiping"]) {
       this.clickable = false;
     }
-    this.setState(state);
+    this.setState({ ...state, previouslyDragged: true });
   };
   swipeEnd = e => {
     let state = swipeEnd(e, {
@@ -476,6 +479,21 @@ export class InnerSlider extends React.Component {
       this.enableBodyScroll();
     }
   };
+  onClickCapture = e => {
+    // from this.swipeStart() -> set previouslyDragged boolean to false
+    // from this.swipeMove() -> set previouslyDragged boolean to true
+    // after this.swipeEnd() is finished and this.onClickCapture() is triggered
+    // it will call e.stopPropagation() if previous event was drag or swipe.
+    // other cases such as just clicking on items inside of slide, it will properly trigger
+    // onClick event of child components
+    const { previouslyDragged } = this.state;
+    if (previouslyDragged) {
+      e.stopPropagation();
+      e.preventDefault();
+      return;
+    }
+  };
+
   slickPrev = () => {
     // this and fellow methods are wrapped in setTimeout
     // to make sure initialize setState has happened before
@@ -695,6 +713,7 @@ export class InnerSlider extends React.Component {
       className: "slick-list",
       style: listStyle,
       onClick: this.clickHandler,
+      onClickCapture: this.onClickCapture,
       onMouseDown: touchMove ? this.swipeStart : null,
       onMouseMove: this.state.dragging && touchMove ? this.swipeMove : null,
       onMouseUp: touchMove ? this.swipeEnd : null,
@@ -708,8 +727,7 @@ export class InnerSlider extends React.Component {
 
     let innerSliderProps = {
       className: className,
-      dir: "ltr",
-      style:this.props.style
+      dir: "ltr"
     };
 
     if (this.props.unslick) {
