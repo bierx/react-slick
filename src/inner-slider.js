@@ -467,7 +467,8 @@ export class InnerSlider extends React.Component {
       ...this.state,
       trackRef: this.track,
       listRef: this.list,
-      slideIndex: this.state.currentSlide
+      slideIndex: this.state.currentSlide,
+      previouslyDragged: false
     });
     if (!state) return;
     let triggerSlideHandler = state["triggerSlideHandler"];

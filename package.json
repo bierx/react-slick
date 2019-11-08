@@ -1,6 +1,6 @@
 {
   "name": "react-slick-bx",
-  "version": "0.25.3",
+  "version": "0.25.4",
   "description": " React port of slick carousel",
   "main": "./lib",
   "files": [
@@ -21,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bierx/react-slick"
+    "url": "git+https://github.com/bierx/react-slick.git"
   },
   "keywords": [
     "slick",
@@ -126,5 +126,10 @@
     "type": "opencollective",
     "url": "https://opencollective.com/react-slick",
     "logo": "https://opencollective.com/opencollective/logo.txt"
+  },
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "lib": "lib"
   }
 }
