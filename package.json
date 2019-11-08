@@ -1,6 +1,6 @@
 {
-  "name": "react-slick",
-  "version": "0.25.2",
+  "name": "react-slick-bx",
+  "version": "0.25.3",
   "description": " React port of slick carousel",
   "main": "./lib",
   "files": [
@@ -21,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/akiran/react-slick"
+    "url": "https://github.com/bierx/react-slick"
   },
   "keywords": [
     "slick",
