@@ -470,6 +470,9 @@ export class InnerSlider extends React.Component {
       slideIndex: this.state.currentSlide,
       previouslyDragged: false
     });
+
+    console.log(state);
+
     if (!state) return;
     let triggerSlideHandler = state["triggerSlideHandler"];
     delete state["triggerSlideHandler"];
@@ -718,7 +721,10 @@ export class InnerSlider extends React.Component {
       onMouseDown: touchMove ? this.swipeStart : null,
       onMouseMove: this.state.dragging && touchMove ? this.swipeMove : null,
       onMouseUp: touchMove ? this.swipeEnd : null,
-      onMouseLeave: this.state.dragging && touchMove ? this.swipeEnd : null,
+      onMouseLeave: e => {
+        console.log(this.state.dragging, touchMove);
+        touchMove ? this.swipeEnd(e) : null;
+      },
       onTouchStart: touchMove ? this.swipeStart : null,
       onTouchMove: this.state.dragging && touchMove ? this.swipeMove : null,
       onTouchEnd: touchMove ? this.swipeEnd : null,
